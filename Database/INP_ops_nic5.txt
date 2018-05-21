@@ -1,0 +1,5 @@
+CO_trev_1.denom	CO_trev_1_denom	correlation,nonlinear
+SY_SpreadRandomLocal_100_100.meantaul	SY_SpreadRandomLocal_100_100_meantaul	stationarity
+EN_SampEn_5_03.sampen4	EN_SampEn_5_03_sampen4	entropy,sampen
+ST_LocalExtrema_n100.stdmin	ST_LocalExtrema_n100_stdmin	distribution,stationarity
+NL_TSTL_ReturnTime_5_1_40_n1_1_8.pzeros	NL_TSTL_ReturnTime_5_1_40_n1_1_8_pzeros	nonlinear,tstool
