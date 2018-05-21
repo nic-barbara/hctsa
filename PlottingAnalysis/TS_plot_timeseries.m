@@ -132,26 +132,26 @@ end
 %% Get group indices:
 % ------------------------------------------------------------------------------
 if (isempty(whatTimeSeries) || strcmp(whatTimeSeries,'grouped')) && isfield(TimeSeries,'Group')
-    % Use default groups
+    % Use default groups assigned by TS_LabelGroups
     groupIndices = BF_ToGroup([TimeSeries.Group]);
-    fprintf(1,'Plotting from %u groups of time series from file.\n',length(groupIndices));
+    numGroups = length(groupIndices);
+    groupNames = TS_GetFromData(whatData,'groupNames');
+    fprintf(1,'Plotting from %u groups of time series from file.\n',numGroups);
 elseif isempty(whatTimeSeries) || strcmp(whatTimeSeries,'all')
     % Nothing specified but no groups assigned, or specified 'all': plot from all time series
     groupIndices = {1:length(TimeSeries)};
+    groupNames = {};
 elseif ischar(whatTimeSeries)
     % Just plot the specified group
     % First load group names:
-    if isstruct(whatData)
-        groupNames = whatData.groupNames;
-    else
-        load(theFile,'groupNames');
-    end
+    groupNames = TS_GetFromData(dataSource,'groupNames');
     a = strcmp(whatTimeSeries,groupNames);
     groupIndices = {find([TimeSeries.Group]==find(a))};
+    groupNames = {whatTimeSeries};
     fprintf(1,'Plotting %u time series matching group name ''%s''\n',length(groupIndices{1}),whatTimeSeries);
 else % Provided a custom range as a vector
-    [~,ind] = intersect([TimeSeries.ID],whatTimeSeries);
-    groupIndices = {ind};
+    groupIndices = {whatTimeSeries};
+    groupNames = {};
     fprintf(1,'Plotting the %u time series matching indices provided\n',length(whatTimeSeries));
 end
 numGroups = length(groupIndices);
@@ -201,7 +201,7 @@ rKeep = (iPlot > 0);
 classes = classes(rKeep);
 iPlot = iPlot(rKeep); % contains all the indicies of time series to plot (in order)
 numToPlot = length(iPlot);
-% keyboard;
+
 %-------------------------------------------------------------------------------
 fprintf(1,'Plotting %u (/%u) time series from %u classes\n', ...
                     numToPlot,sum(cellfun(@length,groupIndices)),numGroups);
@@ -272,19 +272,12 @@ if plotFreeForm
     ax.Box = 'on';
     hold(ax,'on');
 
-	yr = linspace(1,0,numToPlot+1);
+    yr = linspace(1,0,numToPlot+1);
     inc = abs(yr(2)-yr(1)); % size of increment
     yr = yr(2:end);
-	ls = zeros(numToPlot,1); % lengths of each time series
+    ls = zeros(numToPlot,1); % lengths of each time series
 
-    % Group names
-    if numGroups > 1
-        keywords = TS_GetFromData(whatData,'groupNames');
-        
-        % Setup adding legend if groups
-        phandles = zeros(1,length(keywords));
-    end
-    
+    pHandles = zeros(numToPlot,1); % keep plot handles
 	for i = 1:numToPlot
 	    fn = TimeSeries(iPlot(i)).Name; % the name of the time series
 	    kw = TimeSeries(iPlot(i)).Keywords; % the keywords
@@ -292,8 +285,9 @@ if plotFreeForm
 	    N0 = length(x);
 		if ~isempty(maxN) && (N0 > maxN)
 			% specified a maximum length of time series to plot
-            sti = randi(N0-maxN,1);
-			x = x(sti:sti+maxN-1); % subset random segment
+%             sti = randi(N0-maxN,1);
+% 			x = x(sti:sti+maxN-1); % subset random segment
+            x = x(1:maxN);
             N = length(x);
         else
             N = N0; % length isn't changing
@@ -307,44 +301,21 @@ if plotFreeForm
         else % plot by group color (or all black for 1 class)
             colorNow = theColors{classes(i)};
         end
-        p = plot(xx,xsc,'-','color',colorNow,'LineWidth',lw);
-
-        % Legend
-        if numGroups > 1
-            allThere = false;
-            for k = 1:length(keywords)
-                if ~allThere
-                    
-                    % PREVIOUSLY USED STRFIND, BUT THIS WILL NOT WORK IF
-                    % SOME KEYWORDS CONTAIN THE OTHERS (EG: pulsators and
-                    % non_pulsators). USING ISEQUAL FOR NOW, BUT SHOULD
-                    % FIND A BETTER WAY TO DO THIS (ON MY TO DO LIST) - Nic
-                    if isequal(kw,keywords{k})
-                        if phandles(k) == 0
-                            phandles(k) = p;
-                        end
-                    end
-                    if isempty(phandles(phandles == 0))
-                        allThere = true;
-                    end
-                end
-            end
-        end
+        pHandles(i) = plot(xx,xsc,'-','color',colorNow,'LineWidth',lw);
 
         % Annotate text labels
 		if displayTitles
 			theTit = sprintf('{%u} %s [%s] (%u)',TimeSeries(iPlot(i)).ID,fn,kw,N0);
 			text(0.01,yr(i)+0.9*inc,theTit,'interpreter','none','FontSize',8)
 	    end
+	end
+
+    % Legend:
+    if ~isempty(groupNames)
+        [~,b] = unique(classes);
+        legend(pHandles(b),groupNames);
     end
 
-    % Legend
-    if numGroups > 1
-        if ~isempty(phandles(phandles > 0))
-            legend(phandles,keywords,'interpreter','none');
-        end
-    end
-    
     % Set up axes:
     ax.XTick = linspace(0,1,3);
     ax.XTickLabel = round(linspace(0,maxN,3));
@@ -352,10 +323,11 @@ if plotFreeForm
     ax.YTickLabel = {};
 	ax.XLim = [0,1]; % Don't let the axes annoyingly slip out
     xlabel('Time (samples)')
+
 else
     % i.e., NOT a FreeForm plot:
-	for i = 1:numToPlot
-	    subplot(numToPlot,1,i)
+    for i = 1:numToPlot
+	    ax = subplot(numToPlot,1,i)
 	    fn = TimeSeries(iPlot(i)).Name; % the filename
 	    kw = TimeSeries(iPlot(i)).Keywords; % the keywords
 	    x = TimeSeries(iPlot(i)).Data;
@@ -392,19 +364,18 @@ else
 	            end
 	        end
 	    end
-        ax = gca;
 	    ax.YTickLabel = '';
         if i~=numToPlot
-	        ax.XTickLabel='';
+	        ax.XTickLabel = '';
             ax.FontSize = 8; % put the ticks for the last time series
         else % label the axis
             ax.XLabel = 'Time (samples)';
         end
 	end
 
-	% Set all xlims so that they have the same x-axis limits
+	% Set all subplots to have the same x-axis limits
     for i = 1:numToPlot
-	    ax = subplot(numToPlot,1,i);
+        ax = subplot(numToPlot,1,i);
         ax.XLim = [1,max(Ls)];
     end
 end
