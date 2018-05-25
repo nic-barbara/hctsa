@@ -154,6 +154,7 @@ if doViolin
         axisLabels{1} = 'all';
         axisLabels(2:end) = groupNames;
         ax.XTickLabel = axisLabels;
+        set(gca,'Fontsize',12);
     else
         % Just run a single global one
         dataCell = {TS_DataMat(:,theOp)};
@@ -191,12 +192,13 @@ if doViolin
     dataStruct.TimeSeries = TimeSeries; dataStruct.groupNames = groupNames;
     dataStruct.TS_DataMat = TS_DataMat; dataStruct.Operations = Operations;
     TS_plot_timeseries(dataStruct,annotateParams.n,flipud(r),annotateParams.maxL,plotOptions);
-
+    set(gca,'Fontsize',12);
+    
     % Put rectangles if data is grouped
     if isfield(TimeSeries,'Group')
         rectHeight = 1/annotateParams.n;
         rectWidth = 0.1;
-        for i = 1:annotateParams.n
+        for i = 1:annotateParams.n;
             rectangle('Position',[-rectWidth*1,(i-1)*rectHeight,rectWidth,rectHeight],...
                                     'FaceColor',myColors{1+timeSeriesGroup(r(i))});
         end
