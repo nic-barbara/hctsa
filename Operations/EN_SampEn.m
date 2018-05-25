@@ -15,7 +15,7 @@ function out = EN_SampEn(y,M,r,preProcessHow)
 % Physiol., 278(6) H2039 (2000)
 %
 % This function can also calculate the SampEn of successive increments of time
-% series, i.e., we using an incremental differencing pre-processing, as
+% series, i.e., using an incremental differencing pre-processing, as
 % used in the so-called Control Entropy quantity:
 %
 % "Control Entropy: A complexity measure for nonstationary signals"

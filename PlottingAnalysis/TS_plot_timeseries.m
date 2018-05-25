@@ -355,8 +355,8 @@ else
 	                title([startBit ' (' num2str(N) ')'],'interpreter','none','FontSize',8);
 	            end
 	        else
-	            sti = randi(N-maxLength,1);
-	            plot(x(sti:sti+maxLength),'-','color',theColors{classes(i)}) % plot a random maxLength-length portion of the time series
+% 	            sti = randi(N-maxLength,1);
+	            plot(x(1:maxLength),'-','color',theColors{classes(i)}) % plot a random maxLength-length portion of the time series
 	            Ls(i) = maxLength;
 	            if displayTitles
 	                title([startBit ' (' num2str(N) ' :: ' num2str(sti) '-' num2str(sti+maxLength) ')'],...
