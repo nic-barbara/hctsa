@@ -103,9 +103,9 @@ if numClasses==2
         end
     case 'tree'
         if CVFolds > 0
-            Mdl = fitctree(XTrain,yTrain,'KFold',CVFolds)
+            Mdl = fitctree(XTrain,yTrain,'KFold',CVFolds);
         else
-            Mdl = fitctree(XTrain,yTrain)
+            Mdl = fitctree(XTrain,yTrain);
         end
     case {'linear','linclass'}
         if CVFolds > 0
