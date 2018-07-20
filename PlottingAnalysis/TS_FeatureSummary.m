@@ -198,7 +198,7 @@ if doViolin
     if isfield(TimeSeries,'Group')
         rectHeight = 1/annotateParams.n;
         rectWidth = 0.1;
-        for i = 1:annotateParams.n;
+        for i = 1:annotateParams.n
             rectangle('Position',[-rectWidth*1,(i-1)*rectHeight,rectWidth,rectHeight],...
                                     'FaceColor',myColors{1+timeSeriesGroup(r(i))});
         end

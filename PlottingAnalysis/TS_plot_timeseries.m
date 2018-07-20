@@ -1,4 +1,4 @@
-function TS_plot_timeseries(whatData,numPerGroup,whatTimeSeries,maxLength,plotOptions)
+function TS_plot_timeseries(whatData,numPerGroup,whatTimeSeries,maxLength,plotOptions,isMag)
 % TS_plot_timeseries    Plots examples of time series in an hctsa analysis.
 %
 %---INPUTS:
@@ -13,6 +13,9 @@ function TS_plot_timeseries(whatData,numPerGroup,whatTimeSeries,maxLength,plotOp
 % maxLength, the maximum number of samples of each time series to plot
 %
 % plotOptions, additional plotting options as a structure
+%
+% isMag - only for astronomy usage, magnitude inverts the plots so this
+% flips them back the other way.
 
 % ------------------------------------------------------------------------------
 % Copyright (C) 2017, Ben D. Fulcher <ben.d.fulcher@gmail.com>,
@@ -62,6 +65,10 @@ end
 
 if nargin < 5
 	plotOptions = [];
+end
+
+if nargin < 6
+    isMag = false;
 end
 
 % ------------------------------------------------------------------------------
@@ -293,6 +300,9 @@ if plotFreeForm
             N = N0; % length isn't changing
         end
 		xx = (1:N) / maxN;
+        if isMag
+            x = -x;
+        end
 		xsc = yr(i) + 0.8*(x-min(x))/(max(x)-min(x)) * inc;
 
         if numGroups==1 && (length(theColors)==numToPlot)
@@ -327,7 +337,7 @@ if plotFreeForm
 else
     % i.e., NOT a FreeForm plot:
     for i = 1:numToPlot
-	    ax = subplot(numToPlot,1,i)
+	    ax = subplot(numToPlot,1,i);
 	    fn = TimeSeries(iPlot(i)).Name; % the filename
 	    kw = TimeSeries(iPlot(i)).Keywords; % the keywords
 	    x = TimeSeries(iPlot(i)).Data;
