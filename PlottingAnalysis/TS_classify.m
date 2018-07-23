@@ -1,4 +1,4 @@
-function [foldLosses,nullStat] = TS_classify(whatData,whatClassifier,varargin)
+function [foldLosses,nullStat,confResults] = TS_classify(whatData,whatClassifier,varargin)
 % TS_classify   Classify groups in the data using all features (and PCs)
 %
 % This function uses a classifier to learn group labels assigned to time series
@@ -223,6 +223,11 @@ ax.TickLabelInterpreter = 'none';
 % Make the figure background white:
 % f = gcf; f.Color = 'w';
 title(sprintf('Confusion matrix for a 10-fold repeated cross-validation run (of %u)',numRepeats));
+
+% Return confusion label results for later analysis if required
+confResults = struct;
+confResults.real = realLabels;
+confResults.predict = predictLabels;
 
 %-------------------------------------------------------------------------------
 % Compare performance of reduced PCs from the data matrix:
