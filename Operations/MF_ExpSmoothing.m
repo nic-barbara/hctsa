@@ -119,7 +119,7 @@ if strcmp(alpha,'best')
         nalpha = length(alphar);
         rmses = zeros(nalpha,1);
 
-        for k = 1:nalpha;
+        for k = 1:nalpha
             a = alphar(k);
 
             % Loop for rolling window
@@ -196,7 +196,7 @@ if strcmp(alpha,'best')
 
         if p(1) < 0 % concave down -- it's looking at a maximum
             % weird case
-            if y(1) < y(end);
+            if y(1) < y(end)
                 alphamin = 0.01;
             else
                 alphamin = 1;
