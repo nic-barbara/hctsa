@@ -2,4 +2,4 @@ DN_Quantile_99	quantile_99	distribution
 AC_nl_122	AC_nl_122	correlation,nonlinearautocorr
 CO_AddNoise_red_ac_std1_10.fitlinb    CO_AddNoise_red_ac_std1_10_fitlinb    correlation,AMI,entropy
 CO_Embed2_Shapes_red_tau_circle_01.ac1	CO_Embed2_Shapes_red_tau_circle_01_ac1	correlation,embedding
-MF_ExpSmoothing_05_best.acsnd0	MF_ExpSmoothing_05_best_acsnd0	model
+MF_ExpSmoothing_red_05_best.acsnd0	MF_ExpSmoothing_red_05_best_acsnd0	model
