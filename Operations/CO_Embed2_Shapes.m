@@ -65,7 +65,7 @@ if nargin < 4 || isempty(r)
 end
 
 % Can set time lag equal to first zero crossing of the autocorrelation function with the 'tau' input
-if strcmp(tau,'tau'),
+if strcmp(tau,'tau')
     tau = CO_FirstZero(y,'ac');
     % Cannot set the time delay greater than 10% the length of the time series
     if tau > length(y)/10
@@ -74,7 +74,7 @@ if strcmp(tau,'tau'),
 end
 
 % Ensure y is a column vector:
-if size(y,2) > size(y,1);
+if size(y,2) > size(y,1)
 	y = y';
 end
 
