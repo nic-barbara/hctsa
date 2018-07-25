@@ -57,7 +57,7 @@ end
 N = length(e);
 
 % ------------------------------------------------------------------------------
-%% Basic statiatics on residuals, then zscore
+%% Basic statistics on residuals, then zscore
 % ------------------------------------------------------------------------------
 out.meane = mean(e);
 out.meanabs = mean(abs(e));

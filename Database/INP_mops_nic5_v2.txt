@@ -1,0 +1,5 @@
+DN_Quantile(y,0.99)	DN_Quantile_99
+CO_NonlinearAutocorr(y,[1,2,2])	AC_nl_122
+CO_AddNoise_reduced(y,'ac','std1',10,'default')    CO_AddNoise_red_ac_std1_10
+CO_Embed2_Shapes_reduced(y,'tau','circle',0.1)	CO_Embed2_Shapes_red_tau_circle_01
+MF_ExpSmoothing_reduced(y,0.5,'best')	MF_ExpSmoothing_red_05_best

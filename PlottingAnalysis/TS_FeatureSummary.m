@@ -97,7 +97,9 @@ end
 if ~isfield(annotateParams,'maxL')
     annotateParams.maxL = 500;
 end
-
+if ~isfield(annotateParams,'isMag')
+    annotateParams.isMag = false; % INCLUDED ONLY FOR ASTRONOMY PURPOSES, MAKES LIFE EASIER WHEN PLOTTING IN MAGINTIDUES
+end
 % if isfield(annotateParams,'whereann') % what text annotation to use
 %     textann = annotateParams.whereann;
 % else
@@ -191,7 +193,8 @@ if doViolin
     dataStruct = struct();
     dataStruct.TimeSeries = TimeSeries; dataStruct.groupNames = groupNames;
     dataStruct.TS_DataMat = TS_DataMat; dataStruct.Operations = Operations;
-    TS_plot_timeseries(dataStruct,annotateParams.n,flipud(r),annotateParams.maxL,plotOptions);
+    isMag = annotateParams.isMag;
+    TS_plot_timeseries(dataStruct,annotateParams.n,flipud(r),annotateParams.maxL,plotOptions,isMag);
     set(gca,'Fontsize',12);
     
     % Put rectangles if data is grouped

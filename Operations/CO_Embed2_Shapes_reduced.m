@@ -1,9 +1,12 @@
-function out = CO_Embed2_Shapes(y,tau,shape,r)
+function out = CO_Embed2_Shapes_reduced(y,tau,shape,r)
 % CO_Embed2_Shapes Shape-based statistics in a 2-d embedding space
 %
 % Takes a shape and places it on each point in the two-dimensional time-delay
 % embedding space sequentially. This function counts the points inside this shape
 % as a function of time, and returns statistics on this extracted time series.
+%
+% This version of this fcn has been reduced and edited by Nicholas Barbara.
+% Email: nbar5346@uni.sydney.edu.au
 %
 %---INPUTS:
 % y, the input time-series as a (z-scored) column vector
@@ -46,8 +49,6 @@ function out = CO_Embed2_Shapes(y,tau,shape,r)
 % this program. If not, see <http://www.gnu.org/licenses/>.
 % ------------------------------------------------------------------------------
 
-doPlot = 0; % plot results for debugging
-
 % ------------------------------------------------------------------------------
 %% Check inputs, set defaults:
 % ------------------------------------------------------------------------------
@@ -84,9 +85,6 @@ end
 m = [y(1:end-tau), y(1+tau:end)];
 N = length(m);
 
-if doPlot % plot the recurrence space:
-	plot(m(:,1),m(:,2),'.');
-end
 
 %% Start the analysis
 
@@ -123,37 +121,5 @@ end
 % Return basic statistics on the counts
 % ------------------------------------------------------------------------------
 out.ac1 = CO_AutoCorr(counts,1,'Fourier');
-out.ac2 = CO_AutoCorr(counts,2,'Fourier');
-out.ac3 = CO_AutoCorr(counts,3,'Fourier');
-out.tau = CO_FirstZero(counts,'ac');
-out.max = max(counts);
-out.std = std(counts);
-out.median = median(counts);
-out.mean = mean(counts);
-out.iqr = iqr(counts);
-out.iqronrange = out.iqr/range(counts);
-
-% --- Distribution
-% Using the sqrt binning method:
-[binP,binEdges] = histcounts(counts,'BinMethod','sqrt','Normalization','probability');
-binCentres = mean([binEdges(1:end-1); binEdges(2:end)]);
-[out.mode_val, mix] = max(binP);
-out.mode = binCentres(mix);
-% --- histogram entropy:
-out.hist_ent = sum(binP(binP > 0).*log(binP(binP > 0)));
-
-if doPlot
-	plot(binCentres,poisspdf(binCentres,l),'g'); hold on;
-	plot(binCentres,n,'k'); hold off
-end
-
-% --- Stationarity measure for fifths of the time series
-afifth = floor(N/5);
-buffer_m = zeros(afifth,5); % stores a fifth of the time series (embedding vector) in each entry
-for i = 1:5
-	buffer_m(:,i) = counts(afifth*(i-1)+1:afifth*i);
-end
-out.statav5_m = std(mean(buffer_m))/std(counts);
-out.statav5_s = std(std(buffer_m))/std(counts);
 
 end

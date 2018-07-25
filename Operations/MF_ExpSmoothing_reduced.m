@@ -1,4 +1,4 @@
-function out = MF_ExpSmoothing(x,ntrain,alpha)
+function out = MF_ExpSmoothing_reduced(x,ntrain,alpha)
 % MF_ExpSmoothing   Exponential smoothing time-series prediction model.
 %
 % Fits an exponential smoothing model to the time series using a training set to
@@ -9,6 +9,9 @@ function out = MF_ExpSmoothing(x,ntrain,alpha)
 %
 % Code is adapted from original code provided by Siddharth Arora:
 % Siddharth.Arora@sbs.ox.ac.uk
+%
+% This version of this fcn has been reduced and edited by Nicholas Barbara.
+% Email: nbar5346@uni.sydney.edu.au
 %
 %---INPUTS:
 % x, the input time series
@@ -54,7 +57,6 @@ function out = MF_ExpSmoothing(x,ntrain,alpha)
 % this program. If not, see <http://www.gnu.org/licenses/>.
 % ------------------------------------------------------------------------------
 
-doPlot = 0; % plot outputs
 N = length(x); % the length of the time series
 
 %-------------------------------------------------------------------------------
@@ -111,63 +113,48 @@ if strcmp(alpha,'best')
     % Training set xtrain
     xtrain = x(1:ntrain);
 
-    bruteforce = 0;
+    % do a descent
+    % fits a quadratic to available points
 
-    if bruteforce
-        % set a range of alpha and find minimum
-        alphar = (0.1:0.1:1); % the exponential smoothing parameter
-        nalpha = length(alphar);
-        rmses = zeros(nalpha,1);
+    % (1) use alpha = 0.01, 0.1, 0.5, 0.8
+    alphar = linspace(0.1,0.9,5);
+    rmses = zeros(4,1);
 
-        for k = 1:nalpha
-            a = alphar(k);
+    for k = 1:length(alphar)
+        a = alphar(k);
 
-            % Loop for rolling window
-            xf = SUB_fit_exp_smooth(xtrain,a);
+        xf = SUB_fit_exp_smooth(xtrain,a);
 
-            % Issue forecasts
-            fore = xf(3:end);
-            orig = xtrain(3:end);
-            rmses(j) = sqrt(mean((fore - orig).^2)); % compute rmse
-%             rmses(k) = rmse(fore,orig);
-%             rmse_n(k,2) = a;
+        % Issue forecasts
+        fore = xf(3:end);
+        orig = xtrain(3:end);
+        rmses(k) = sqrt(mean((fore - orig).^2)); % compute rmse
+    end
 
-            % plot(orig);hold on;plot(fore,'r');hold off
-            input(num2str(a));
+    % fit quadratic to set alpha
+    [~, ix] = sort(rmses);
+    rkeep = ix(1:3); % fit on 3 points closest to minimum
+    p = polyfit(alphar(rkeep)',rmses(rkeep),2);
+    aar = (0:0.005:1);
+    y = polyval(p,aar);
 
-        %     count = count + 1;
-            clear xf;
-            clear fore;
+    alphamin = -p(2)/(2*p(1));
 
-            % ++BF -- halts unnecessary calculation
-            ntimes = 5;
-            if k > ntimes
-                d_rmse_n = diff(rmse_n(k-ntimes:k,1));
-                if all(d_rmse_n>0)
-                    % increased <ntimes> times in a row
-                    % disp('breaking')
-                    break
-                end
-            end
-
-            % Find the value of smoothing parameter that minimizes
-            % in-sample 1-step ahead prediction error
-            minrmse = min(rmses);
-            alpha_optimum = alphar(rmses == minrmse);
-
-            % Produce some preliminary outputs
-            out.train_minrmse = minrmse;
-            out.train_alpha = alpha_optimum;
-
+    if p(1) < 0 % concave down -- it's looking at a maximum
+        % weird case
+        if y(1) < y(end)
+            alphamin = 0.01;
+        else
+            alphamin = 1;
         end
     else
-        % do a descent
-        % fits a quadratic to available points
-
-        % (1) use alpha = 0.01, 0.1, 0.5, 0.8
-%         alphar = [0.1, 0.2, 0.5, 0.8, 0.9];
-        alphar = linspace(0.1,0.9,5);
-        rmses = zeros(4,1);
+        % Search again around this
+        alphar = linspace(alphamin-0.1,alphamin+0.1,5);
+        if any(alphar <= 0)
+            alphar = linspace(0.01,max(alphamin,0)+0.1,5);
+        elseif any(alphar >= 1)
+            alphar = linspace(min(alphamin,1)-0.1,1,5);
+        end
 
         for k = 1:length(alphar)
             a = alphar(k);
@@ -178,71 +165,24 @@ if strcmp(alpha,'best')
             fore = xf(3:end);
             orig = xtrain(3:end);
             rmses(k) = sqrt(mean((fore - orig).^2)); % compute rmse
+
         end
 
         % fit quadratic to set alpha
-        [sort_rmses, ix] = sort(rmses);
-        rkeep = ix(1:3); % fit on 3 points closest to minimum
-        p = polyfit(alphar(rkeep)',rmses(rkeep),2);
-        aar = (0:0.005:1);
-        y = polyval(p,aar);
-%         plot(aar,y,':k'); hold on;
-%         plot(alphar,rmses,'or');
-%         plot(alphar(rkeep),rmses(rkeep),'*m'); hold off
-        alphamin = -p(2)/(2*p(1));
-        out.alphamin_1 = alphamin;
-        out.p1_1 = abs(p(1)); % concavity
-        out.cup_1 = sign(p(1));
+        p = polyfit(alphar',rmses,2);
 
-        if p(1) < 0 % concave down -- it's looking at a maximum
-            % weird case
-            if y(1) < y(end)
-                alphamin = 0.01;
-            else
-                alphamin = 1;
-            end
-        else
-            % Search again around this
-            alphar = linspace(alphamin-0.1,alphamin+0.1,5);
-            if any(alphar <= 0)
-                alphar = linspace(0.01,max(alphamin,0)+0.1,5);
-            elseif any(alphar >= 1)
-                alphar = linspace(min(alphamin,1)-0.1,1,5);
-            end
-
-            for k = 1:length(alphar)
-                a = alphar(k);
-
-                xf = SUB_fit_exp_smooth(xtrain,a);
-
-                % Issue forecasts
-                fore = xf(3:end);
-                orig = xtrain(3:end);
-                rmses(k) = sqrt(mean((fore - orig).^2)); % compute rmse
-
-            end
-
-            % fit quadratic to set alpha
-            p = polyfit(alphar',rmses,2);
-%             aar = 0:0.005:1;
-%             y = polyval(p,aar);
-%             plot(aar,y,':k'); hold on;
-%             plot(alphar,rmses,'or'); hold off
-
-            if p(1) < 0
-                alphamin = alphar(rmses == min(rmses));
-                % This is quite bad -- the first step didn't find a local
-                % minimum...
-            else % minimum of quadratic fit
-                alphamin = -p(2)/(2*p(1));
-                if alphamin > 1, alphamin = 1; end
-                if alphamin <= 0, alphamin = 0.01; end
-            end
-
+        if p(1) < 0
+            alphamin = alphar(rmses == min(rmses));
+            % This is quite bad -- the first step didn't find a local
+            % minimum...
+        else % minimum of quadratic fit
+            alphamin = -p(2)/(2*p(1));
+            if alphamin > 1, alphamin = 1; end
+            if alphamin <= 0, alphamin = 0.01; end
         end
+
     end
 
-    out.alphamin = alphamin;
     alpha = alphamin;
 end
 
@@ -270,22 +210,12 @@ e = yp-xp; % residuals
 
 % Use MF_ResidualAnalysis on the residuals
 % 1) Get statistics on residuals
-residout = MF_ResidualAnalysis(e);
+residout = MF_ResidualAnalysis_reduced(e);
 
 % convert these to local outputs in quick loop
 fields = fieldnames(residout);
 for k = 1:length(fields)
     out.(fields{k}) = residout.(fields{k});
-end
-
-% t=1:length(yp);
-
-if doPlot
-    figure('color','w'); box('on')
-    plot(t,x(3:N),'b',t,y(3:N),'k');
-    legend('Obs', 'Fit');
-    xlabel('Time');
-    ylabel('Amplitude');
 end
 
 % ------------------------------------------------------------------------------
@@ -307,6 +237,5 @@ function xf = SUB_fit_exp_smooth(x,a)
         xf(ii+1,1) = s(ii);
     end
 end
-
 
 end
