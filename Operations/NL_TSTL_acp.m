@@ -1,4 +1,4 @@
-function out = NL_TSTL_acp(y,tau,past,maxDelay,maxDim,Nref,randomSeed)
+function out = NL_TSTL_acp(y,tau,paset,maxDelay,maxDim,Nref,randomSeed)
 % NL_TSTL_acp   acp function in TSTOOL
 %
 % The documentation isn't crystal clear, but this function seems to be related

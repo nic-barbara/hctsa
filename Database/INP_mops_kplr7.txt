@@ -1,0 +1,5 @@
+CO_NonlinearAutocorr_reduced(y,[0,1,2])	AC_nl_red_012
+SB_MotifTwo_reduced(y,'diff')	SB_MotifTwo_red_diff
+SP_Summaries_reduced(y,'fft',[],[],false)	SP_Summaries_red_fft
+CO_AutoCorr_reduced(y,8,'Fourier')	AC_red_8
+EN_DistributionEntropy_reduced(y,'hist','fd',0)	        EN_DistributionEntropy_red_hist_fd_0

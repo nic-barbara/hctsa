@@ -1,0 +1,5 @@
+AC_nl_red_012	AC_nl_red_012	correlation,nonlinearautocorr
+SB_MotifTwo_red_diff.uu	SB_MotifTwo_red_diff_uu	symbolic,motifs
+SP_Summaries_red_fft.peakPower_prom2     SP_Summaries_red_fft_peakPower_prom2    spectral
+AC_red_8		AC_red_8		correlation
+EN_DistributionEntropy_red_hist_fd_0        EN_DistributionEntropy_red_hist_fd_0         entropy
