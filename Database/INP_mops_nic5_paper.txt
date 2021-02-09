@@ -1,0 +1,5 @@
+CO_NonlinearAutocorr(y,[0,1,2])	AC_nl_012
+FC_LocalSimple(y,'mean',1)	FC_LocalSimple_mean1
+CO_StickAngles(y)	CO_StickAngles_y
+MF_steps_ahead(y,'ar','best',6)	MF_steps_ahead_ar_best_6
+NL_TSTL_PoincareSection(y,'max',{'ac',3})	NL_TSTL_PoincareSection_max_ac

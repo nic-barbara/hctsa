@@ -1,0 +1,5 @@
+AC_nl_012	AC_nl_012	correlation,nonlinearautocorr
+FC_LocalSimple_mean1.tauresrat	FC_LocalSimple_mean1_tauresrat	forecasting
+CO_StickAngles_y.mean_n	CO_StickAngles_y_mean_n	correlation
+MF_steps_ahead_ar_best_6.rmserr_4	MF_steps_ahead_ar_best_6_rmserr_4	model,prediction,arfit
+NL_TSTL_PoincareSection_max_ac.ac1D	NL_TSTL_PoincareSection_max_ac_ac1D	nonlinear,tstool

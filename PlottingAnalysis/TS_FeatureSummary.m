@@ -122,6 +122,9 @@ end
 if doViolin
     % Violin plots
     rainbowColors = [BF_getcmap('set1',5,1); BF_getcmap('dark2',5,1)];
+    
+    % Plot formatting
+    fsize = 16;
 
     if isfield(TimeSeries,'Group')
         dataCell = cell(numGroups+1,1);
@@ -156,7 +159,7 @@ if doViolin
         axisLabels{1} = 'all';
         axisLabels(2:end) = groupNames;
         ax.XTickLabel = axisLabels;
-        set(gca,'Fontsize',12);
+        set(gca,'Fontsize',fsize);
     else
         % Just run a single global one
         dataCell = {TS_DataMat(:,theOp)};
@@ -178,7 +181,7 @@ if doViolin
         end
         ax.XTick = [];
     end
-    ax.TickLabelInterpreter = 'none';
+%     ax.TickLabelInterpreter = 'none';
     title(sprintf('[%u]%s (%s)',theOperation.ID,theOperation.Name,theOperation.Keywords),'interpreter','none')
     ylabel('Feature value');
 
@@ -195,7 +198,7 @@ if doViolin
     dataStruct.TS_DataMat = TS_DataMat; dataStruct.Operations = Operations;
     isMag = annotateParams.isMag;
     TS_plot_timeseries(dataStruct,annotateParams.n,flipud(r),annotateParams.maxL,plotOptions,isMag);
-    set(gca,'Fontsize',12);
+    set(gca,'Fontsize',fsize);
     
     % Put rectangles if data is grouped
     if isfield(TimeSeries,'Group')

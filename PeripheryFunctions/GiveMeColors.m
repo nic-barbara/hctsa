@@ -1,8 +1,11 @@
-function colorCell = GiveMeColors(numColors)
+function colorCell = GiveMeColors(numColors,isNic)
 % GiveMeColors outputs a cell of colors for the specified number of colors
 %
 % Relies on the BF_getcmap function to pull out the appropriate colorbrewer
 % colormaps
+%
+% Function modified to use color map designed for the color blind, unless
+% isNic = false. Can support a maximum of 8 colors in this case.
 
 % ------------------------------------------------------------------------------
 % Copyright (C) 2017, Ben D. Fulcher <ben.d.fulcher@gmail.com>,
@@ -32,6 +35,15 @@ function colorCell = GiveMeColors(numColors)
 % You should have received a copy of the GNU General Public License along with
 % this program. If not, see <http://www.gnu.org/licenses/>.
 % ------------------------------------------------------------------------------
+
+% Use my (Nicholas Barbara) color scheme function
+if nargin < 2
+    isNic = true;
+end
+if isNic
+    colorCell = GiveNicColors(numColors);
+    return
+end
 
 if numColors == 1
     colorCell = {[0,0,0]}; % Just use black...

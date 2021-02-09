@@ -222,7 +222,7 @@ ax.TickLabelInterpreter = 'none';
 
 % Make the figure background white:
 % f = gcf; f.Color = 'w';
-title(sprintf('Confusion matrix for a 10-fold repeated cross-validation run (of %u)',numRepeats));
+title(sprintf('Confusion matrix for a %d-fold repeated cross-validation run (of %u)',numFolds,numRepeats));
 
 % Return confusion label results for later analysis if required
 confResults = struct;

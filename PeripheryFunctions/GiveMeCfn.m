@@ -179,7 +179,7 @@ else
     if ismember(whatClassifier,{'svm_linear','svm_rbf','linear','linclass','diaglinear'}) && reWeight
         % Weight across potential class imbalance:
         if CVFolds > 0
-            Mdl = fitcecoc(XTrain,yTrain,'Learners',t,'Weights',InverseProbWeight(yTrain),'KFold',CVFolds);
+            Mdl = fitcecoc(XTrain,yTrain,'Learners',t,'Weights',InverseProbWeight(yTrain),'KFold',CVFolds); %%%%%%%%%%%%%%%%%%%%%%%%%
         else
             Mdl = fitcecoc(XTrain,yTrain,'Learners',t,'Weights',InverseProbWeight(yTrain));
         end
@@ -223,6 +223,4 @@ else
         accuracy = BF_lossFunction(yTrain,yPredict,whatLoss,numClasses);
     end
 end
-
-
 end
